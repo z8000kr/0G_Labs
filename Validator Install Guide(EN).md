@@ -1,4 +1,4 @@
-# 0G Newton Validator Installation Guide
+# 0G Newton Validator v0.2.3 Installation Guide
 
 -------
 
@@ -32,9 +32,11 @@ source $HOME/.bash_profile
 
 ### Git Download and Installation
 ```bash
-git clone -b v0.1.0 https://github.com/0glabs/0g-chain.git
-./0g-chain/networks/testnet/install.sh
-source .profile
+sudo apt install git
+git clone -b v0.2.3 https://github.com/0glabs/0g-chain.git
+cd 0g-chain
+make install
+0gchaind version
 ```
 
 ### Node Configuration
@@ -55,70 +57,47 @@ cd $HOME
 0gchaind config keyring-backend os
 ```
 
-### Address Book Update
-```bash
-rm ~/.0gchain/config/genesis.json
-curl -Ls https://github.com/0glabs/0g-chain/releases/download/v0.1.0/genesis.json > $HOME/.0gchain/config/genesis.json
-curl -Ls https://raw.githubusercontent.com/Core-Node-Team/Testnet-TR/main/0G-Newton/addrbook.json > $HOME/.0gchain/config/addrbook.json
-```
-
-### Peers and Seed Update
-```bash
-# Peers and seeds are updated in the configuration file.
-```
-
 ### Latest Snapshot Download
 ```bash
-wget http://snapshots.liveraven.net/snapshots/testnet/zero-gravity/zgtendermint_16600-1_latest.tar.lz4
-lz4 -d -c ./zgtendermint_16600-1_latest.tar.lz4 | tar -xf - -C $HOME/.0gchain
+sudo apt install -y unzip wget
+rm ~/.0gchain/config/genesis.json
+wget -P ~/.0gchain/config https://github.com/0glabs/0g-chain/releases/download/v0.2.3/genesis.json
+```
+
+### Seed Configuration
+```bash
+SEEDS="265120a9bb170cf21198aabf88f7908c9944897c@54.241.167.190:26656,497f865d8a0f6c830e2b73009a01b3edefb22577@54.176.175.48:26656,ffc49903241a4e442465ec78b8f421c56b3ae3d4@54.193.250.204:26656,f37bc8623bfa4d8e519207b965a24a288f3213d8@18.166.164.232:26656" && \
+sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.0gchain/config/config.toml
 ```
 
 ### Service Creation
 ```bash
-# A service for the OG Node is created.
+sudo tee /etc/systemd/system/ogd.service > /dev/null <<EOF
+[Unit]
+Description=OG Node
+After=network.target
+
+[Service]
+User=root
+Type=simple
+ExecStart=$(which 0gchaind) start --json-rpc.api eth,txpool,personal,net,debug,web3 --home $HOME/.0gchain
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+Environment="DAEMON_HOME=$HOME/.0gchain"
+Environment="DAEMON_NAME=0gchaind"
+Environment="UNSAFE_SKIP_BACKUP=true"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.0gchain/cosmovisor/current/bin"
+
+[Install]
+WantedBy=multi-user.target
+EOF
 ```
 
 ### Service Start
 ```bash
-# The service is started and monitored.
-```
-
-### Node Sync Check
-```bash
-# The node's synchronization status is checked.
-```
-
-### Wallet Creation
-```bash
-0gchaind keys add desired_wallet_name --eth
-```
-
-### Private Key Generation (For Adding to MetaMask)
-```bash
-0gchaind keys unsafe-export-eth-key desired_wallet_name
-```
-
-### EVM (0x Address) Check (For Receiving Test Tokens)
-```bash
-0gchaind debug addr $(0gchaind keys show desired_wallet_name -a) | grep 'Address (hex):' | awk -F ': ' '{print "0x" $2}'
-```
-
-### Receive Test Tokens
-```bash
-https://faucet.0g.ai/
-```
-
-### Check Wallet Balance
-```bash
-0gchaind q bank balances $(0gchaind keys show desired_wallet_name -a)
-```
-
-### Validator Creation
-```bash
-# The command to create a validator is provided.
-```
-
-### Check Validator Registration: Search by Server Name
-```bash
-https://zscan.xyz
+sudo systemctl daemon-reload && \
+sudo systemctl enable ogd && \
+sudo systemctl restart ogd &&  \
+sudo journalctl -u ogd -f -o cat
 ```
