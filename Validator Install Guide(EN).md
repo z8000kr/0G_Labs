@@ -42,7 +42,7 @@ make install
 ### Node Configuration
 ```bash
 echo 'export MONIKER="desired_server_name"' >> ~/.bash_profile
-echo 'export CHAIN_ID="zgtendermint_16600-1"' >> ~/.bash_profile
+echo 'export CHAIN_ID="zgtendermint_16600-2"' >> ~/.bash_profile
 echo 'export WALLET_NAME="wallet"' >> ~/.bash_profile
 echo 'export RPC_PORT="26657"' >> ~/.bash_profile
 source $HOME/.bash_profile
