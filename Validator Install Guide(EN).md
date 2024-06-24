@@ -19,11 +19,10 @@ sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -
 ### Go Update
 ```bash
 cd $HOME
-VER="1.21.3"
 wget "https://go.dev/dl/go1.22.0.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
-rm "go$VER.linux-amd64.tar.gz"
+sudo tar -C /usr/local -xzf "go1.22.0.linux-amd64.tar.gz"
+rm "go1.22.0.linux-amd64.tar.gz"
 [ ! -f ~/.bash_profile ] && touch ~/.bash_profile
 echo "export PATH=\$PATH:/usr/local/go/bin:~/go/bin" >> ~/.bash_profile
 source $HOME/.bash_profile
