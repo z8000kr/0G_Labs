@@ -20,7 +20,7 @@ sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -
 ```bash
 cd $HOME
 VER="1.21.3"
-wget "https://golang.org/dl/go$VER.linux-amd64.tar.gz"
+wget "https://go.dev/dl/go1.22.0.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
 rm "go$VER.linux-amd64.tar.gz"
