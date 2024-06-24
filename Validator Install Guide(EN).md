@@ -57,11 +57,16 @@ cd $HOME
 0gchaind config keyring-backend os
 ```
 
-### Latest Snapshot Download
+### Genesis.json Download
 ```bash
 sudo apt install -y unzip wget
 rm ~/.0gchain/config/genesis.json
 wget -P ~/.0gchain/config https://github.com/0glabs/0g-chain/releases/download/v0.2.3/genesis.json
+```
+
+### Latest addrbook Download
+```bash
+sudo curl -o $HOME/.0gchain/config/addrbook.json https://drive.google.com/file/d/1JHvDPaRCoHHhxWxiGjQKYZM3I0W13uZP/view?usp=drive_link
 ```
 
 ### Seed Configuration
@@ -100,4 +105,37 @@ sudo systemctl daemon-reload && \
 sudo systemctl enable ogd && \
 sudo systemctl restart ogd &&  \
 sudo journalctl -u ogd -f -o cat
+```
+
+### Node Sync
+```bash
+0gchaind status | jq '{ latest_block_height: .sync_info.latest_block_height, catching_up: .sync_info.catching_up }'
+```
+
+### Validator info
+```bash
+0gchaind q staking validator $(0gchaind keys show 1 --bech val -a)
+```
+
+### active validator serch
+```bash
+0gchaind q staking validators -oj --limit=3000 \
+| jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' \
+| jq -r '(.tokens|tonumber/pow(10; 6)|floor|tostring) + " \t " + .description.moniker' \
+| sort -gr \
+| nl
+```
+
+### inactive validator serch
+```bash
+0gchaind q staking validators -oj --limit=3000 \
+| jq '.validators[] | select(.status=="BOND_STATUS_UNBONDED")' \
+| jq -r '(.tokens|tonumber/pow(10; 6)|floor|tostring) + " \t " + .description.moniker' \
+| sort -gr \
+| nl
+```
+
+### Token Balance
+```bash
+0gchaind q bank balances $(0gchaind keys show wallet -a)
 ```
