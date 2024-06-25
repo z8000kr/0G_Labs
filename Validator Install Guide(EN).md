@@ -31,11 +31,15 @@ source $HOME/.bash_profile
 
 ### Git Download and Installation
 ```bash
-sudo apt install git
-git clone -b v0.2.3 https://github.com/0glabs/0g-chain.git
-cd 0g-chain
-make install
-0gchaind version
+cd $HOME && \
+ver="1.21.3" && \
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
+sudo rm -rf /usr/local/go && \
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
+rm "go$ver.linux-amd64.tar.gz" && \
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && \
+source $HOME/.bash_profile && \
+go version
 ```
 
 ### Node Configuration
@@ -61,11 +65,6 @@ cd $HOME
 sudo apt install -y unzip wget
 rm ~/.0gchain/config/genesis.json
 wget -P ~/.0gchain/config https://github.com/0glabs/0g-chain/releases/download/v0.2.3/genesis.json
-```
-
-### Latest addrbook Download
-```bash
-sudo curl -o $HOME/.0gchain/config/addrbook.json https://drive.google.com/file/d/1JHvDPaRCoHHhxWxiGjQKYZM3I0W13uZP/view?usp=drive_link
 ```
 
 ### Seed Configuration
